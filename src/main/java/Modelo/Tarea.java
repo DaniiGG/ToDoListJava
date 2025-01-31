@@ -21,6 +21,8 @@ public class Tarea {
         this.fechaFin = fechaFin;
     }
 
+    public Tarea() {};
+
     public int getId() {
         return id;
     }
@@ -76,4 +78,5 @@ public class Tarea {
     public void setFechaInc(LocalDate fechaInc) {
         this.fechaInc = fechaInc;
     }
+
 }
