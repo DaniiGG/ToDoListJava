@@ -79,4 +79,10 @@ public class Tarea {
         this.fechaInc = fechaInc;
     }
 
+    @Override
+    public String toString() {
+        return String.format("ID: %d, Título: %s, Descripción: %s, Estado: %s, Prioridad: %s, Inicio: %s, Fin: %s",
+                id, titulo, descripcion, estado, prioridad, fechaInc, fechaFin);
+    }
+
 }

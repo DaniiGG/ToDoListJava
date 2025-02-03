@@ -9,10 +9,13 @@ import java.util.List;
 
 public class DBDDL {
     private Connection connection;
+    public List<Tarea> tareas= new ArrayList<>();
 
     public DBDDL() {
         try {
             this.connection = DButils.getConnection(); // Usar la conexión de DButils
+            System.out.println("Hlanz");
+            obtenerTareas();
             crearTabla();
         } catch (SQLException e) {
             System.err.println("❌ Error al conectar con la base de datos: " + e.getMessage());
@@ -58,8 +61,8 @@ public class DBDDL {
         }
     }
 
-    public List<Tarea> listarTareas() {
-        List<Tarea> tareas = new ArrayList<>();
+    public List<Tarea> obtenerTareas() {
+        tareas = new ArrayList<>();
         String sql = "SELECT * FROM tareas";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql);
@@ -82,5 +85,38 @@ public class DBDDL {
         }
 
         return tareas;
+    }
+
+    public void borrarTarea(int id){
+        String sql = "DELETE FROM tareas WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            int filasAfectadas = stmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                System.out.println("✅ Tarea eliminada correctamente.");
+            } else {
+                System.out.println("⚠️ No se encontró ninguna tarea con el ID proporcionado.");
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al borrar tarea: " + e.getMessage());
+        }
+    }
+    public boolean existeTarea(int id) {
+        String sql = "SELECT COUNT(*) FROM tareas WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Si el conteo es mayor que 0, la tarea existe
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al verificar la existencia de la tarea: " + e.getMessage());
+        }
+
+        return false; // Si hay un error o el ID no existe, devolvemos false
     }
 }
