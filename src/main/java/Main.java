@@ -36,9 +36,9 @@ public class Main {
                             crearTarea(scanner, dbTarea, conexion);
                             break;
                         case 2:
-
+                            listarTareas(conexion);
                             break;
-                        case 3:/*
+                        case 3:
                             int idBorrar;
 
                             while (true) {
@@ -47,21 +47,20 @@ public class Main {
                                     System.out.println("⚠️ No hay tareas para borrar.");
                                     break;
                                 }
-
+                                listarTareas(conexion);
                                 System.out.print("\nIngrese el ID de la tarea a borrar: ");
                                 idBorrar = scanner.nextInt();
+                                int finalIdBorrar = idBorrar;
+                                conexion.tareas.removeIf(tarea -> tarea.getId() == finalIdBorrar);
                                 conexion.borrarTarea(idBorrar);
                                 System.out.println("\n📋 Lista actualizada de tareas:");
-                                tareas = conexion.listarTareas();
-                                for (Tarea tarea : tareas) {
-                                    System.out.println(tarea);
-                                }
+                                listarTareas(conexion);
                                 System.out.print("\n¿Desea borrar otra tarea? (s/n): ");
                                 String respuesta = scanner.next().toLowerCase();
                                 if (!respuesta.equals("s")) {
                                     break;
                                 }
-                            }*/
+                            }
                         case 4:
                             System.out.println("Saliendo...");
                             scanner.close();
