@@ -119,4 +119,28 @@ public class DBDDL {
 
         return false; // Si hay un error o el ID no existe, devolvemos false
     }
+
+    public void editarTarea(Tarea tarea) {
+        String sql = "UPDATE tareas SET titulo = ?, descripcion = ?, fechaInc = ?, fechaFin = ?, estado = ?, prioridad = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, tarea.getTitulo());
+            stmt.setString(2, tarea.getDescripcion());
+            stmt.setDate(3, java.sql.Date.valueOf(tarea.getFechaInc()));
+            stmt.setDate(4, java.sql.Date.valueOf(tarea.getFechaFin()));
+            stmt.setString(5, tarea.getEstado().name());
+            stmt.setString(6, tarea.getPrioridad().name());
+            stmt.setInt(7, tarea.getId());
+
+            int filasAfectadas = stmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                System.out.println("✅ Tarea editada correctamente.");
+            } else {
+                System.out.println("⚠️ No se encontró ninguna tarea con el ID proporcionado.");
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Error al editar tarea: " + e.getMessage());
+        }
+    }
 }

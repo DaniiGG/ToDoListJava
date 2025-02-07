@@ -24,8 +24,9 @@ public class Main {
                     System.out.println("\nGestor de Tareas");
                     System.out.println("1. Crear tarea");
                     System.out.println("2. Listar tareas");
-                    System.out.println("3. Borrar tareas");
-                    System.out.println("4. Salir");
+                    System.out.println("3. Borrar tarea");
+                    System.out.println("4. Editar tarea");
+                    System.out.println("5. Salir");
                     System.out.print("Seleccione una opción: ");
 
                     int opcion = scanner.nextInt();
@@ -39,29 +40,12 @@ public class Main {
                             listarTareas(conexion);
                             break;
                         case 3:
-                            int idBorrar;
-
-                            while (true) {
-
-                                if (conexion.tareas.isEmpty()) {
-                                    System.out.println("⚠️ No hay tareas para borrar.");
-                                    break;
-                                }
-                                listarTareas(conexion);
-                                System.out.print("\nIngrese el ID de la tarea a borrar: ");
-                                idBorrar = scanner.nextInt();
-                                int finalIdBorrar = idBorrar;
-                                conexion.tareas.removeIf(tarea -> tarea.getId() == finalIdBorrar);
-                                conexion.borrarTarea(idBorrar);
-                                System.out.println("\n📋 Lista actualizada de tareas:");
-                                listarTareas(conexion);
-                                System.out.print("\n¿Desea borrar otra tarea? (s/n): ");
-                                String respuesta = scanner.next().toLowerCase();
-                                if (!respuesta.equals("s")) {
-                                    break;
-                                }
-                            }
+                            borrarTarea(scanner, conexion);
+                            break;
                         case 4:
+                            editarTarea(scanner, conexion);
+                            break;
+                        case 5:
                             System.out.println("Saliendo...");
                             scanner.close();
                             return;
@@ -70,32 +54,75 @@ public class Main {
                     }
                 }
             }
-
-        }
-
-    }
-    private static void listarTareas(DBDDL conexion){
-        for(Tarea i: conexion.tareas){
-            System.out.println(i);
         }
     }
+
+    private static void listarTareas(DBDDL conexion) {
+        if (conexion.tareas.isEmpty()) {
+            System.out.println("⚠️ No hay tareas registradas.");
+        } else {
+            for (Tarea tarea : conexion.tareas) {
+                System.out.println(tarea);
+            }
+        }
+    }
+
     private static void crearTarea(Scanner scanner, Tarea dbTarea, DBDDL conexion) {
-
         System.out.print("Título: ");
         String titulo = scanner.nextLine();
 
         System.out.print("Descripción: ");
         String descripcion = scanner.nextLine();
-        /*
-        System.out.print("Estado (Pendiente, Empezada, Acabada): ");
-        Estado estado = Estado.valueOf(scanner.nextLine());
 
-        System.out.print("Prioridad (Alta, Media, Baja): ");
-        Prioridad prioridad = Prioridad.valueOf(scanner.nextLine());
-        */
         dbTarea = new Tarea(0, titulo, descripcion, LocalDate.now(), Estado.Pendiente, Prioridad.Baja, LocalDate.now());
         conexion.tareas.add(dbTarea);
         conexion.insertarTarea(dbTarea);
         System.out.println("✅ Tarea creada con éxito.");
+    }
+
+    private static void borrarTarea(Scanner scanner, DBDDL conexion) {
+        if (conexion.tareas.isEmpty()) {
+            System.out.println("⚠️ No hay tareas para borrar.");
+            return;
+        }
+
+        listarTareas(conexion);
+        System.out.print("\nIngrese el ID de la tarea a borrar: ");
+        int idBorrar = scanner.nextInt();
+        scanner.nextLine(); // Consumir el salto de línea
+
+        if (conexion.existeTarea(idBorrar)) {
+            conexion.borrarTarea(idBorrar);
+            System.out.println("✅ Tarea eliminada correctamente.");
+        } else {
+            System.out.println("⚠️ No se encontró ninguna tarea con ese ID.");
+        }
+    }
+
+    private static void editarTarea(Scanner scanner, DBDDL conexion) {
+        if (conexion.tareas.isEmpty()) {
+            System.out.println("⚠️ No hay tareas para editar.");
+            return;
+        }
+
+        listarTareas(conexion);
+        System.out.print("\nIngrese el ID de la tarea a editar: ");
+        int idEditar = scanner.nextInt();
+        scanner.nextLine(); // Consumir el salto de línea
+
+        if (!conexion.existeTarea(idEditar)) {
+            System.out.println("⚠️ No se encontró ninguna tarea con ese ID.");
+            return;
+        }
+
+        System.out.print("Nuevo título: ");
+        String titulo = scanner.nextLine();
+
+        System.out.print("Nueva descripción: ");
+        String descripcion = scanner.nextLine();
+
+        Tarea tareaEditada = new Tarea(idEditar, titulo, descripcion, LocalDate.now(), Estado.Pendiente, Prioridad.Baja, LocalDate.now());
+        conexion.editarTarea(tareaEditada);
+        System.out.println("✅ Tarea editada con éxito.");
     }
 }
